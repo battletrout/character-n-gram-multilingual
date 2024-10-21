@@ -27,8 +27,14 @@ Vagrant.configure("2") do |config|
       # Download spaCy model (small, may change later)
       python3 -m spacy download en_core_web_sm
   
-      # Install desktop environment and VB guest additions
-      apt-get install -y ubuntu-desktop virtualbox-guest-x11
+      # Install desktop environment and VirtualBox guest additions
+      sudo apt-get install -y ubuntu-desktop virtualbox-guest-x11 lightdm
+      
+      # Ensure lightdm is set as the display manager
+      sudo dpkg-reconfigure lightdm
+
+      # Set GUI as the default target
+      sudo systemctl set-default graphical.target
 
       # Set up environment variables
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
