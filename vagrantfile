@@ -6,6 +6,9 @@ Vagrant.configure("2") do |config|
     config.vm.provider "virtualbox" do |vb|
       vb.memory = "8192"
       vb.cpus = 4
+      vb.gui = true
+      vb.customize ["modifyvm", :id, "--vram", "128"]
+      vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
     end
   
     # Create a shared folder between host and guest
@@ -21,9 +24,12 @@ Vagrant.configure("2") do |config|
       # Install Python dependencies
       pip3 install spacy pybind11
   
-      # Download spaCy model (you can change this to the model you need)
+      # Download spaCy model (small, may change later)
       python3 -m spacy download en_core_web_sm
   
+      # Install desktop environment and VB guest additions
+      apt-get install -y ubuntu-desktop virtualbox-guest-x11
+
       # Set up environment variables
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
       echo 'export PYTHONPATH=$PYTHONPATH:/vagrant_data' >> /home/vagrant/.bashrc
