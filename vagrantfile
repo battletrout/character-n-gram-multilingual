@@ -27,6 +27,25 @@ Vagrant.configure("2") do |config|
       # Set up environment variables
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
       echo 'export PYTHONPATH=$PYTHONPATH:/vagrant_data' >> /home/vagrant/.bashrc
-
+  
+      # Create project directory structure
+      cd /vagrant_data
+      mkdir -p cpp/{src,include,lib,build}
+      mkdir -p python/{src,tests}
+      mkdir scripts
+  
+      # Create placeholder files
+      touch cpp/src/custom_tokenizer.cpp
+      touch cpp/include/custom_tokenizer.h
+      touch cpp/CMakeLists.txt
+      touch python/src/spacy_module.py
+      touch python/tests/test_tokenizer.py
+      touch python/requirements.txt
+      touch scripts/build.sh
+      touch scripts/test.sh
+      touch README.md
+        
+      # Set correct permissions
+      chown -R vagrant:vagrant /vagrant_data
     SHELL
   end
