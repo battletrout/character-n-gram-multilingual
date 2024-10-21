@@ -1,0 +1,34 @@
+# Ignore data folder for now
+data/
+
+# C++ ignores
+cpp/build/
+*.o
+*.so
+*.dylib
+
+# Python ignores
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Vagrant
+.vagrant/
+
+# IDE/Editor folders
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Virtual environment
+venv/
+env/
