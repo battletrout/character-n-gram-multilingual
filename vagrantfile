@@ -11,35 +11,41 @@ Vagrant.configure("2") do |config|
       vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
     end
   
-    # Create a shared folder between host and guest
     config.vm.synced_folder ".", "/vagrant_data"
-  
+
     config.vm.provision "shell", inline: <<-SHELL
-      apt-get update
-      apt-get install -y build-essential cmake git python3 python3-pip
-  
-      # Install C++ development tools
-      apt-get install -y clang libclang-dev
-  
+      # Update and install necessary packages
+      sudo apt-get update
+      sudo apt-get install -y build-essential cmake git python3 python3-pip clang libclang-dev
+
       # Install Python dependencies
       pip3 install spacy pybind11
-  
-      # Download spaCy model (small, may change later)
+
+      # Download spaCy model
       python3 -m spacy download en_core_web_sm
-  
-      # Install desktop environment and VirtualBox guest additions
-      sudo apt-get install -y ubuntu-desktop virtualbox-guest-x11 lightdm
-      
+
+      # Install Xfce desktop environment and VirtualBox guest additions
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y xfce4 virtualbox-guest-x11 lightdm
+
       # Ensure lightdm is set as the display manager
       sudo dpkg-reconfigure lightdm
 
       # Set GUI as the default target
       sudo systemctl set-default graphical.target
 
+      # Install Visual Studio Code
+      sudo apt-get install -y wget gpg
+      wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+      sudo install -D -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/packages.microsoft.gpg
+      sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+      rm -f packages.microsoft.gpg
+      sudo apt-get update
+      sudo apt-get install -y code
+
       # Set up environment variables
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
       echo 'export PYTHONPATH=$PYTHONPATH:/vagrant_data' >> /home/vagrant/.bashrc
-  
+
       # Create project directory structure
       cd /vagrant_data
       mkdir -p cpp/{src,include,lib,build}
@@ -59,5 +65,16 @@ Vagrant.configure("2") do |config|
         
       # Set correct permissions
       chown -R vagrant:vagrant /vagrant_data
+    # Create a desktop shortcut for VSCode
+    echo "[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Visual Studio Code
+Comment=Code Editing. Redefined.
+Exec=/usr/bin/code
+Icon=com.visualstudio.code
+Terminal=false
+Categories=Development;IDE;" > /home/vagrant/Desktop/code.desktop
+    chmod +x /home/vagrant/Desktop/code.desktop
     SHELL
   end
